@@ -8,20 +8,25 @@ stopifnot(exists("datasets"), exists("info_datasets"))
 
 
 inicio_total <- Sys.time()
-  source("carregar_datasets.R")
-  source("prob_prox.R")
-  source("supervised.R")
-  source("GKFP1.R")
-  source("fuzeval.R")
-  source("PrelevantAlpha.R")
-  source("PrelevantCI.R")
-  source("corrigir_permutacao_labels.R")
-  source("otimizar_parametros.R")
-  source("rodar_avaliacao.R")
-  source("rodar_modelos.R")
-   source("fisher_ratio_det.R")
-  source("evaluate_acc.R")
-  source("fisher_selection_loop.R")
+# =========================
+# Load source files
+# =========================
+
+source("src/carregar_datasets.R")
+source("src/prob_prox.R")
+source("src/supervised.R")
+source("src/GKFP1.R")
+source("src/fuzeval.R")
+source("src/PrelevantAlpha.R")
+source("src/PrelevantCI.R")
+source("src/corrigir_permutacao_labels.R")
+source("src/otimizar_parametros.R")
+source("src/rodar_avaliacao.R")
+source("src/rodar_modelos.R")
+source("src/fisher_ratio_det.R")
+source("src/evaluate_acc.R")
+source("src/fisher_selection_loop.R")
+
 
 # =========================
 # Load all source functions
