@@ -144,7 +144,7 @@ Liver_completo <- Liver_trans[, c("mcv","alkphos","sgpt","sgot",
   "Segmentation" = {
     dados <- ler_txt("Segmentation.txt", sep = "", strip.white = FALSE)
     dados <- limpar_strings(dados)
-   # dados <- dados[, c(11,13,17,19,20)]
+    dados <- dados[, c(11,13,17,19,20)]
     amostrar(dados, 500)
   },
   
@@ -238,6 +238,7 @@ info_datasets <- list(
   Weaning    = list(R = 2, usar_pred = TRUE),
   Wine       = list(R = 3, usar_pred = TRUE)
 )
+
 
 
 
