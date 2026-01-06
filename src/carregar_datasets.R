@@ -27,10 +27,12 @@ amostrar <- function(dados, n) {
 
 # ==== Carregamento dos datasets ====
 datasets <- list(
-  "Adult"      = {
-    dados=ler_txt("Adult.txt", sep = ",")
-    dados=dados[,c(8,9,10,15)]
-    },
+ "Adult" = {
+  dados <- ler_txt("Adult.txt", sep = ",")
+  dados <- dados[, c(8,9,10,15)]
+  dados
+},
+
 
   "Banana"     = ler_txt("Banana.txt"),
   "Blood"      = ler_txt("Blood.txt"),
@@ -65,15 +67,17 @@ dados
   
   "German"     = ler_txt("German.txt"),
   "Glass"      = ler_txt("Glass.txt"),
-  "Haberman"   = {
-    dados=ler_txt("Haberman.txt")
-    dados= dados[,c(3,1,4)]
-   },
+"Haberman" = {
+  dados <- ler_txt("Haberman.txt")
+  dados <- dados[, c(3,1,4)]
+  dados
+},
 
 
   "Heart"      = {
    dados=ler_txt("Heart.txt", sep = ",")
    dados=dados[,c(13,12,3,8,14)]
+   dados
     },
    
   "ILPD"       = ler_txt("ILPD.txt", sep = ","),
@@ -109,6 +113,7 @@ Liver_trans$ggt_alk <- Liver_trans$gammagt / pmax(Liver_trans$alkphos, 1e-6)
 # 5) Reordenar para garantir que o target esteja no fim
 Liver_completo <- Liver_trans[, c("mcv","alkphos","sgpt","sgot",
                                   "gammagt","drinks","ast_alt","ggt_alk","target")]
+    Liver_completo
 
 },
 
@@ -177,7 +182,7 @@ X_sel <- data.frame(
 
 # 3) Conjunto final com target na última coluna
 Vertebral_sel <- cbind(X_sel, target = y)
-
+Vertebral_sel
 },
  "WBC"        = ler_txt("WBC.txt", sep = ","),
   
@@ -230,5 +235,6 @@ info_datasets <- list(
   Weaning    = list(R = 2, usar_pred = TRUE),
   Wine       = list(R = 3, usar_pred = TRUE)
 )
+
 
 
