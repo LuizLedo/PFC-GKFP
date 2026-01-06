@@ -34,7 +34,10 @@ datasets <- list(
 },
 
 
-  "Banana"     = ler_txt("Banana.txt"),
+  "Banana"     = { 
+  dados=ler_txt("Banana.txt")
+  amostrar(dados, 300)                    
+                  },
   "Blood"      = ler_txt("Blood.txt"),
   
   "CTG"        = {
@@ -235,6 +238,7 @@ info_datasets <- list(
   Weaning    = list(R = 2, usar_pred = TRUE),
   Wine       = list(R = 3, usar_pred = TRUE)
 )
+
 
 
 
