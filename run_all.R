@@ -1,3 +1,12 @@
+
+files <- list.files("src", pattern = "\\.R$", full.names = TRUE)
+invisible(lapply(files, source))
+
+# neste ponto, datasets e info_datasets já existem no ambiente
+stopifnot(exists("datasets"), exists("info_datasets"))
+
+
+
 inicio_total <- Sys.time()
 
 # =========================
