@@ -2,7 +2,10 @@
 # =========================================================
 # PFC-GKFP - Main script (SEQUENTIAL, STABLE)
 # =========================================================
-
+require(dplyr)
+require(clue)
+library(dplyr)
+library(clue)
 inicio_total <- Sys.time()
 
 # -------------------------
@@ -23,7 +26,7 @@ source("src/fisher_ratio_det.R")
 source("src/evaluate_acc.R")
 source("src/fisher_selection_loop.R")
 
-library(dplyr)
+
 
 # Sanity check
 stopifnot(exists("datasets"), exists("info_datasets"))
@@ -53,7 +56,7 @@ runner <- function(nome_dataset) {
       R = R,
       usar_predold = usar_predold,
       prob = NULL,
-      n_rodadas = 1,
+      n_rodadas = 10,
       verbose = FALSE
     )
 
