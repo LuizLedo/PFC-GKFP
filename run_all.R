@@ -7,15 +7,16 @@ stopifnot(exists("datasets"), exists("info_datasets"))
 
 
 
+
 # =========================================================
-# PFC-GKFP - Main script
+# PFC-GKFP - Main script (DUAL: parallel with safe fallback)
 # =========================================================
 
 inicio_total <- Sys.time()
 
-# =========================
+# -------------------------
 # Load source files
-# =========================
+# -------------------------
 source("src/carregar_datasets.R")
 source("src/prob_prox.R")
 source("src/supervised.R")
@@ -34,57 +35,11 @@ source("src/fisher_selection_loop.R")
 library(dplyr)
 library(parallel)
 
-# Sanity check
 stopifnot(exists("datasets"), exists("info_datasets"))
 
-# =========================
-# Create cluster (robust)
-# =========================
-ncores <- max(1, parallel::detectCores() - 1)
-
-cl <- tryCatch(
-  makeCluster(ncores, type = "PSOCK", outfile = ""),
-  error = function(e) NULL
-)
-
-if (is.null(cl)) {
-  cat("WARNING: Parallel cluster failed. Running sequentially.\n")
-  usar_paralelo <- FALSE
-} else {
-  usar_paralelo <- TRUE
-  on.exit(try(stopCluster(cl), silent = TRUE), add = TRUE)
-}
-
-# =========================
-# Load packages on workers
-# =========================
-if (usar_paralelo) {
-  clusterEvalQ(cl, {
-    library(dplyr)
-    library(GA)
-    library(MASS)
-    library(clue)
-    NULL
-  })
-
-  clusterExport(
-    cl,
-    varlist = c(
-      "datasets", "info_datasets",
-      "rodar_modelos", "rodar_avaliacao", "otimizar_parametros",
-      "fisher_ratio_det", "fisher_selection_loop",
-      "supervised", "GKFP1", "fuzeval",
-      "PrelevantAlpha", "PrelevantCI",
-      "prob_prox", "evaluate_acc",
-      "corrigir_permutacao_labels"
-    ),
-    envir = environment()
-  )
-}
-
-# =========================
-# Runner function (one dataset)
-# =========================
+# -------------------------
+# Runner (one dataset)
+# -------------------------
 runner <- function(nome_dataset) {
 
   inicio_ds <- Sys.time()
@@ -125,27 +80,86 @@ runner <- function(nome_dataset) {
   })
 
   tempo_ds <- round(difftime(Sys.time(), inicio_ds, units = "secs"), 3)
-
-  cat("<< Finished dataset:", nome_dataset,
-      "| Time:", tempo_ds, "seconds\n")
+  cat("<< Finished dataset:", nome_dataset, "| Time:", tempo_ds, "seconds\n")
   flush.console()
 
   out$tempo_s <- tempo_ds
   out
 }
 
-# =========================
-# Run experiments
-# =========================
+# -------------------------
+# Try parallel (protected)
+# -------------------------
+usar_paralelo <- FALSE
+cl <- NULL
+
+# Windows/RStudio tends to be unstable with many cores; keep it small
+ncores <- 2
+
+cl <- tryCatch(
+  makeCluster(ncores, type = "PSOCK", outfile = ""),
+  error = function(e) NULL
+)
+
+if (!is.null(cl)) {
+  usar_paralelo <- TRUE
+  on.exit(try(stopCluster(cl), silent = TRUE), add = TRUE)
+
+  # Load packages on workers
+  ok_eval <- tryCatch({
+    clusterEvalQ(cl, {
+      library(dplyr)
+      library(GA)
+      library(MASS)
+      library(clue)
+      NULL
+    })
+    TRUE
+  }, error = function(e) FALSE)
+
+  # Export required objects/functions
+  ok_export <- FALSE
+  if (ok_eval) {
+    ok_export <- tryCatch({
+      clusterExport(
+        cl,
+        varlist = c(
+          "datasets", "info_datasets",
+          "rodar_modelos", "rodar_avaliacao", "otimizar_parametros",
+          "fisher_ratio_det", "fisher_selection_loop",
+          "supervised", "GKFP1", "fuzeval",
+          "PrelevantAlpha", "PrelevantCI",
+          "prob_prox", "evaluate_acc",
+          "corrigir_permutacao_labels"
+        ),
+        envir = environment()
+      )
+      TRUE
+    }, error = function(e) FALSE)
+  }
+
+  if (!ok_eval || !ok_export) {
+    cat("WARNING: Parallel setup failed. Running sequentially.\n")
+    usar_paralelo <- FALSE
+    try(stopCluster(cl), silent = TRUE)
+    cl <- NULL
+  }
+} else {
+  cat("WARNING: Could not create cluster. Running sequentially.\n")
+}
+
+# -------------------------
+# Run (parallel or sequential)
+# -------------------------
 if (usar_paralelo) {
   todos_resultados <- parLapply(cl, names(info_datasets), runner)
 } else {
   todos_resultados <- lapply(names(info_datasets), runner)
 }
 
-# =========================
+# -------------------------
 # Collect results
-# =========================
+# -------------------------
 tabela_final <- bind_rows(todos_resultados) %>%
   arrange(dataset)
 
@@ -154,14 +168,3 @@ tempo_total <- round(difftime(Sys.time(), inicio_total, units = "secs"), 3)
 cat("=== Total execution time:", tempo_total, "seconds ===\n")
 print(tabela_final)
 
-
-# =========================
-# COLLECT RESULTS
-# =========================
-tabela_final <- bind_rows(todos_resultados) %>%
-  arrange(dataset)
-
-tempo_total <- round(difftime(Sys.time(), inicio_total, units = "secs"), 3)
-
-cat("=== Total execution time:", tempo_total, "seconds ===\n")
-print(tabela_final)
