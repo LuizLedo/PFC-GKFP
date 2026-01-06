@@ -79,6 +79,9 @@ todos_resultados <- parLapply(cl, names(info_datasets), function(nome_dataset) {
 
   inicio_ds <- Sys.time()
 
+  cat(">> Starting dataset:", nome_dataset, "\n")
+  flush.console()
+
   out <- tryCatch({
 
     dados <- datasets[[nome_dataset]]
@@ -112,9 +115,16 @@ todos_resultados <- parLapply(cl, names(info_datasets), function(nome_dataset) {
     )
   })
 
-  out$tempo_s <- round(difftime(Sys.time(), inicio_ds, units = "secs"), 3)
+  tempo_ds <- round(difftime(Sys.time(), inicio_ds, units = "secs"), 3)
+
+  cat("<< Finished dataset:", nome_dataset,
+      "| Time:", tempo_ds, "seconds\n")
+  flush.console()
+
+  out$tempo_s <- tempo_ds
   out
 })
+
 
 # =========================
 # 4) COLLECT RESULTS
