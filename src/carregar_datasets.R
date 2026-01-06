@@ -1,3 +1,16 @@
+
+# ==== Path helper ====
+DATA_DIR <- file.path(getwd(), "data")
+
+# opcional: se rodar a partir de outro lugar, tente resolver relativo ao script
+if (!dir.exists(DATA_DIR)) {
+  DATA_DIR <- "data"
+}
+
+ler_txt <- function(nome, ...) {
+  read.table(file.path(DATA_DIR, nome), ...)
+}
+
 # ==== Funções auxiliares ====
 limpar_strings <- function(dados) {
   dados[] <- lapply(dados, function(x) if (is.character(x)) trimws(x) else x)
@@ -217,3 +230,4 @@ info_datasets <- list(
   Weaning    = list(R = 2, usar_pred = TRUE),
   Wine       = list(R = 3, usar_pred = TRUE)
 )
+
