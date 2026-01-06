@@ -3,81 +3,12 @@ rodar_modelos <- function(dados, P, R,
                           prob = NULL,
                           n_rodadas = 1,
                           alphas = seq(0.1, 1.0, by = 0.1),
-                          pCIs   = seq(0.5, 2.0, by = 0.1),
+                          pCIs   = seq(0.5, 2.0, by = 0.5),
                           verbose = FALSE) {
 
   modelos <- list(
 
-    # =========================
-    # SUPERVISED
-    # =========================
-    "Supervised_ACP_CI" = list(
-      usar_GKFP = FALSE,
-      otimiza_zeta = FALSE,
-      usar_CI = TRUE,
-      usar_GA = TRUE,
-      metodo = "PCA"
-    ),
-
-    "Supervised_ACP_AC" = list(
-      usar_GKFP = FALSE,
-      otimiza_zeta = FALSE,
-      usar_CI = FALSE,
-      usar_GA = TRUE,
-      metodo = "PCA"
-    ),
-
-    "Supervised_FISHER_CI" = list(
-      usar_GKFP = FALSE,
-      otimiza_zeta = FALSE,
-      usar_CI = TRUE,
-      usar_GA = TRUE,
-      metodo = "FISHER"
-    ),
-
-    "Supervised_FISHER_AC" = list(
-      usar_GKFP = FALSE,
-      otimiza_zeta = FALSE,
-      usar_CI = FALSE,
-      usar_GA = TRUE,
-      metodo = "FISHER"
-    ),
-
-    # =========================
-    # GK
-    # =========================
-    "GK_ACP_CI" = list(
-      usar_GKFP = TRUE,
-      otimiza_zeta = FALSE,
-      usar_CI = TRUE,
-      usar_GA = TRUE,
-      metodo = "PCA"
-    ),
-
-    "GK_ACP_AC" = list(
-      usar_GKFP = TRUE,
-      otimiza_zeta = FALSE,
-      usar_CI = FALSE,
-      usar_GA = TRUE,
-      metodo = "PCA"
-    ),
-
-    "GK_FISHER_CI" = list(
-      usar_GKFP = TRUE,
-      otimiza_zeta = FALSE,
-      usar_CI = TRUE,
-      usar_GA = TRUE,
-      metodo = "FISHER"
-    ),
-
-    "GK_FISHER_AC" = list(
-      usar_GKFP = TRUE,
-      otimiza_zeta = FALSE,
-      usar_CI = FALSE,
-      usar_GA = TRUE,
-      metodo = "FISHER"
-    ),
-
+   
     # =========================
     # GKFP
     # =========================
@@ -95,23 +26,11 @@ rodar_modelos <- function(dados, P, R,
       usar_CI = FALSE,
       usar_GA = TRUE,
       metodo = "PCA"
-    ),
-
-    "GKFP_FISHER_CI" = list(
-      usar_GKFP = TRUE,
-      otimiza_zeta = TRUE,
-      usar_CI = TRUE,
-      usar_GA = TRUE,
-      metodo = "FISHER"
-    ),
-
-    "GKFP_FISHER_AC" = list(
-      usar_GKFP = TRUE,
-      otimiza_zeta = TRUE,
-      usar_CI = FALSE,
-      usar_GA = TRUE,
-      metodo = "FISHER"
     )
+
+    
+
+    
   )
 
   resultados <- list()
@@ -162,3 +81,4 @@ rodar_modelos <- function(dados, P, R,
 
   return(resultados)
 }
+
