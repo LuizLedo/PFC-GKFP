@@ -29,7 +29,7 @@ amostrar <- function(dados, n) {
 datasets <- list(
  "Adult" = {
   dados <- ler_txt("Adult.txt", sep = ",")
-  dados <- dados[, c(8,9,10,15)]
+ # dados <- dados[, c(8,9,10,15)]
   dados
 },
 
@@ -42,14 +42,14 @@ datasets <- list(
   
   "CTG"        = {
     dados <- ler_txt("CTG.txt")
-    dados=dados[,c(22,5,2,23)]
+   # dados=dados[,c(22,5,2,23)]
     dados
   },
   
   "Diabetes"   = {
     dados <- ler_txt("Diabetes.txt", head = FALSE)
     dados[, 9] <- ifelse(dados[, 9] == 1, 2, 1)
-    dados=dados[,c(2,6,8,9)]
+    # dados=dados[,c(2,6,8,9)]
     dados
   },
   
@@ -64,7 +64,7 @@ dados
   "Faults"     = {
     dados <- ler_txt("Faults.txt", sep = ",")
     dados <- limpar_strings(dados)
-    dados <- dados[, c(5,8,18,6,23,22,28)]
+   # dados <- dados[, c(5,8,18,6,23,22,28)]
     amostrar(dados, 500)
   },
   
@@ -72,14 +72,14 @@ dados
   "Glass"      = ler_txt("Glass.txt"),
 "Haberman" = {
   dados <- ler_txt("Haberman.txt")
-  dados <- dados[, c(3,1,4)]
+ # dados <- dados[, c(3,1,4)]
   dados
 },
 
 
   "Heart"      = {
    dados=ler_txt("Heart.txt", sep = ",")
-   dados=dados[,c(13,12,3,8,14)]
+  # dados=dados[,c(13,12,3,8,14)]
    dados
     },
    
@@ -131,7 +131,7 @@ Liver_completo <- Liver_trans[, c("mcv","alkphos","sgpt","sgot",
   "Monk"       = {
     dados <- ler_txt("Monk.txt", head = FALSE)
     dados[, 7] <- ifelse(dados[, 7] == 1, 2, 1)
-    dados=dados[,c(2,5,7)] 
+    # dados=dados[,c(2,5,7)] 
     dados
   },
   
@@ -144,13 +144,13 @@ Liver_completo <- Liver_trans[, c("mcv","alkphos","sgpt","sgot",
   "Segmentation" = {
     dados <- ler_txt("Segmentation.txt", sep = "", strip.white = FALSE)
     dados <- limpar_strings(dados)
-    dados <- dados[, c(11,13,17,19,20)]
+   # dados <- dados[, c(11,13,17,19,20)]
     amostrar(dados, 500)
   },
   
   "Sonar"      = {
     dados <- ler_txt("Sonar.txt", sep = ",", strip.white = FALSE)
-    dados <- dados[, c(11, 10, 9, 12, 13, 8, 61)]
+   # dados <- dados[, c(11, 10, 9, 12, 13, 8, 61)]
     limpar_strings(dados)
   },
   
@@ -191,14 +191,14 @@ Vertebral_sel
   
   "WDVG"       = {
     dados <- ler_txt("WDVG.txt", sep = ",", strip.white = FALSE)
-    dados <- dados[, c(6, 11, 9, 15, 12, 10, 5, 22)]
+   # dados <- dados[, c(6, 11, 9, 15, 12, 10, 5, 22)]
     dados <- limpar_strings(dados)
     amostrar(dados, 500)
   },
   
   "Weaning"    = {
     dados <- ler_txt("Weaning.txt", sep = ",", strip.white = FALSE)
-    dados <- dados[, c(6, 7, 13, 14, 18)]
+  #  dados <- dados[, c(6, 7, 13, 14, 18)]
     limpar_strings(dados)
   },
   
@@ -238,6 +238,7 @@ info_datasets <- list(
   Weaning    = list(R = 2, usar_pred = TRUE),
   Wine       = list(R = 3, usar_pred = TRUE)
 )
+
 
 
 
