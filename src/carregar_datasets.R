@@ -28,28 +28,28 @@ amostrar <- function(dados, n) {
 # ==== Carregamento dos datasets ====
 datasets <- list(
   "Adult"      = {
-    dados=read.table("Adult.txt", sep = ",")
+    dados=ler_txt("Adult.txt", sep = ",")
     dados=dados[,c(8,9,10,15)]
     },
 
-  "Banana"     = read.table("Banana.txt"),
-  "Blood"      = read.table("Blood.txt"),
+  "Banana"     = ler_txt("Banana.txt"),
+  "Blood"      = ler_txt("Blood.txt"),
   
   "CTG"        = {
-    dados <- read.table("CTG.txt")
+    dados <- ler_txt("CTG.txt")
     dados=dados[,c(22,5,2,23)]
     dados
   },
   
   "Diabetes"   = {
-    dados <- read.table("Diabetes.txt", head = FALSE)
+    dados <- ler_txt("Diabetes.txt", head = FALSE)
     dados[, 9] <- ifelse(dados[, 9] == 1, 2, 1)
     dados=dados[,c(2,6,8,9)]
     dados
   },
   
   "Ecoli"      = {
-  dados=read.table("Ecoli.txt", sep = "", head = FALSE)
+  dados=ler_txt("Ecoli.txt", sep = "", head = FALSE)
   dados$V8 <- factor(dados$V8,
                      levels = c(1,2,3,4,5,6,7,8),
                      labels = c("Alta", "Alta", "Baixa", "Baixa", "Média", "Média", "Baixa", "Média"))
@@ -57,40 +57,40 @@ dados
 },
   
   "Faults"     = {
-    dados <- read.table("Faults.txt", sep = ",")
+    dados <- ler_txt("Faults.txt", sep = ",")
     dados <- limpar_strings(dados)
     dados <- dados[, c(5,8,18,6,23,22,28)]
     amostrar(dados, 500)
   },
   
-  "German"     = read.table("German.txt"),
-  "Glass"      = read.table("Glass.txt"),
+  "German"     = ler_txt("German.txt"),
+  "Glass"      = ler_txt("Glass.txt"),
   "Haberman"   = {
-    dados=read.table("Haberman.txt")
+    dados=ler_txt("Haberman.txt")
     dados= dados[,c(3,1,4)]
    },
 
 
   "Heart"      = {
-   dados=read.table("Heart.txt", sep = ",")
+   dados=ler_txt("Heart.txt", sep = ",")
    dados=dados[,c(13,12,3,8,14)]
     },
    
-  "ILPD"       = read.table("ILPD.txt", sep = ","),
+  "ILPD"       = ler_txt("ILPD.txt", sep = ","),
   
   "Ionosphere" = {
-    dados <- read.table("Ionosphere.txt", sep = ",", head = FALSE)
+    dados <- ler_txt("Ionosphere.txt", sep = ",", head = FALSE)
     dados <- dados[, -2]
     dados
   },
   
-  "Laryngeal1" = read.table("Laryngeal1.txt", sep = ","),
-  "Laryngeal3" = read.table("Laryngeal3.txt", sep = ","),
-  "Lithuanian" = read.table("Lithuanian.txt"),
+  "Laryngeal1" = ler_txt("Laryngeal1.txt", sep = ","),
+  "Laryngeal3" = ler_txt("Laryngeal3.txt", sep = ","),
+  "Lithuanian" = ler_txt("Lithuanian.txt"),
   "Liver"={
 
 # 1) Leitura
-Liver <- read.table("Liver.txt", header = TRUE, stringsAsFactors = FALSE)
+Liver <- ler_txt("Liver.txt", header = TRUE, stringsAsFactors = FALSE)
 
 # 2) Renomear colunas conforme BUPA clássico
 names(Liver) <- c("mcv","alkphos","sgpt","sgot","gammagt","drinks","target")
@@ -112,45 +112,45 @@ Liver_completo <- Liver_trans[, c("mcv","alkphos","sgpt","sgot",
 
 },
 
-  "Mammo"      = read.table("Mammo.txt", sep = ","),
+  "Mammo"      = ler_txt("Mammo.txt", sep = ","),
   
   "Magic"      = {
-    dados <- read.table("Magic.txt", sep = ",", strip.white = FALSE)
+    dados <- ler_txt("Magic.txt", sep = ",", strip.white = FALSE)
     dados <- limpar_strings(dados)
     amostrar(dados, 300)
   },
   
   "Monk"       = {
-    dados <- read.table("Monk.txt", head = FALSE)
+    dados <- ler_txt("Monk.txt", head = FALSE)
     dados[, 7] <- ifelse(dados[, 7] == 1, 2, 1)
     dados=dados[,c(2,5,7)] 
     dados
   },
   
   "Phoneme"    = {
-    dados <- read.table("Phoneme.txt", sep = ",", strip.white = FALSE)
+    dados <- ler_txt("Phoneme.txt", sep = ",", strip.white = FALSE)
     dados <- limpar_strings(dados)
     amostrar(dados, 500)
   },
   
   "Segmentation" = {
-    dados <- read.table("Segmentation.txt", sep = "", strip.white = FALSE)
+    dados <- ler_txt("Segmentation.txt", sep = "", strip.white = FALSE)
     dados <- limpar_strings(dados)
     dados <- dados[, c(11,13,17,19,20)]
     amostrar(dados, 500)
   },
   
   "Sonar"      = {
-    dados <- read.table("Sonar.txt", sep = ",", strip.white = FALSE)
+    dados <- ler_txt("Sonar.txt", sep = ",", strip.white = FALSE)
     dados <- dados[, c(11, 10, 9, 12, 13, 8, 61)]
     limpar_strings(dados)
   },
   
-  "Thyroid"    = read.table("Thyroid.txt", sep = ",", strip.white = FALSE),
-  "Vehicle"    = read.table("Vehicle.txt", sep = ",", strip.white = FALSE),
+  "Thyroid"    = ler_txt("Thyroid.txt", sep = ",", strip.white = FALSE),
+  "Vehicle"    = ler_txt("Vehicle.txt", sep = ",", strip.white = FALSE),
   
  "Vertebral" ={
-   Vertebral= read.table("Vertebral.txt", sep = ",", strip.white = FALSE)
+   Vertebral= ler_txt("Vertebral.txt", sep = ",", strip.white = FALSE)
 
 # Supondo que Vertebral já está carregado com colunas V1..V7
 # Onde V1..V6 são preditores e V7 é o target
@@ -179,22 +179,22 @@ X_sel <- data.frame(
 Vertebral_sel <- cbind(X_sel, target = y)
 
 },
- "WBC"        = read.table("WBC.txt", sep = ","),
+ "WBC"        = ler_txt("WBC.txt", sep = ","),
   
   "WDVG"       = {
-    dados <- read.table("WDVG.txt", sep = ",", strip.white = FALSE)
+    dados <- ler_txt("WDVG.txt", sep = ",", strip.white = FALSE)
     dados <- dados[, c(6, 11, 9, 15, 12, 10, 5, 22)]
     dados <- limpar_strings(dados)
     amostrar(dados, 500)
   },
   
   "Weaning"    = {
-    dados <- read.table("Weaning.txt", sep = ",", strip.white = FALSE)
+    dados <- ler_txt("Weaning.txt", sep = ",", strip.white = FALSE)
     dados <- dados[, c(6, 7, 13, 14, 18)]
     limpar_strings(dados)
   },
   
-  "Wine"       = read.table("Wine.txt", sep = ",")
+  "Wine"       = ler_txt("Wine.txt", sep = ",")
 )
 
 # ==== Metadados dos datasets ====
@@ -230,4 +230,5 @@ info_datasets <- list(
   Weaning    = list(R = 2, usar_pred = TRUE),
   Wine       = list(R = 3, usar_pred = TRUE)
 )
+
 
