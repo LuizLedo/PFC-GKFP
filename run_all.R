@@ -8,6 +8,20 @@ stopifnot(exists("datasets"), exists("info_datasets"))
 
 
 inicio_total <- Sys.time()
+  source("carregar_datasets.R")
+  source("prob_prox.R")
+  source("supervised.R")
+  source("GKFP1.R")
+  source("fuzeval.R")
+  source("PrelevantAlpha.R")
+  source("PrelevantCI.R")
+  source("corrigir_permutacao_labels.R")
+  source("otimizar_parametros.R")
+  source("rodar_avaliacao.R")
+  source("rodar_modelos.R")
+   source("fisher_ratio_det.R")
+  source("evaluate_acc.R")
+  source("fisher_selection_loop.R")
 
 # =========================
 # Load all source functions
