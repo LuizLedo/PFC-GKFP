@@ -296,7 +296,6 @@ run_knn_pca2_all <- function(datasets,
 #RUN
 source("src/carregar_datasets.R")
 if (!exists("datasets")) stop("Object 'datasets' not found after sourcing carregar_datasets.R.")
-source("src/run_knn_pca2_all_datasets.R")
 run_knn_pca2_all(
   datasets = datasets,
   seeds = 1:10,
