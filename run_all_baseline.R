@@ -1,4 +1,6 @@
 # run_all_baseline.R
+library(ggplot2)
+library(lattice)
 library(class)
 library(e1071)
 library(rpart)
