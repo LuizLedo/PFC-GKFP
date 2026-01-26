@@ -293,16 +293,4 @@ run_knn_pca2_all <- function(datasets,
   invisible(list(raw = raw, summary = summary, failed = failed))
 }
 
-# ============================================================
-# RUN
-# ============================================================
 
-source("src/carregar_datasets.R")
-if (!exists("datasets")) stop("Object 'datasets' not found after sourcing carregar_datasets.R.")
-
-run_knn_pca2_all(
-  datasets = datasets,
-  seeds = 1:10,
-  k_grid = c(1,3,5,7,9),
-  out_dir = "results"
-)
