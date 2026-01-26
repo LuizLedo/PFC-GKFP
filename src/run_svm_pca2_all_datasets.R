@@ -309,7 +309,7 @@ run_svm_pca2_all <- function(datasets,
 
   invisible(list(raw = raw, summary = summary, failed = failed))
 }
-rm(list = ls())
+
 cat("Starting run_svm_main.R ...\n")
 
 source("src/carregar_datasets.R")
