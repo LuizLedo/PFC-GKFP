@@ -315,7 +315,6 @@ cat("Starting run_svm_main.R ...\n")
 source("src/carregar_datasets.R")
 stopifnot(exists("datasets"))
 
-source("src/run_svm_pca2_all_datasets.R")  # só define funções
 
 run_svm_pca2_all(
   datasets = datasets,
