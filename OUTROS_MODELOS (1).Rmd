@@ -1,0 +1,265 @@
+---
+title: "MODELOS"
+author: "Ledo"
+date: "2025-06-15"
+output: html_document
+---
+```{r}
+library(class)
+library(e1071)
+library(rpart)
+library(rpart.plot)
+
+pca_2pc_prcomp <- function(dados) {
+  dados <- as.data.frame(dados)
+
+  # classe na última coluna
+  y <- as.factor(dados[, ncol(dados)])
+  X <- dados[, -ncol(dados), drop = FALSE]
+
+  # char -> factor
+  X[] <- lapply(X, function(col) {
+    if (is.character(col)) as.factor(col) else col
+  })
+
+  # one-hot para categóricas
+  X_mm <- model.matrix(~ . - 1, data = X)
+
+  # remove variância zero
+  sds <- apply(X_mm, 2, sd, na.rm = TRUE)
+  X_mm <- X_mm[, sds > 0, drop = FALSE]
+
+  # remove NA
+  ok <- complete.cases(X_mm) & !is.na(y)
+  X_mm <- X_mm[ok, , drop = FALSE]
+  y    <- y[ok]
+
+  # PCA com scale=TRUE
+  pca <- prcomp(X_mm, center = TRUE, scale. = TRUE)
+
+  PCs <- pca$x[, 1:2, drop = FALSE]
+
+  dados_pca <- data.frame(
+    PC1 = PCs[, 1],
+    PC2 = PCs[, 2],
+    Classe = y
+  )
+
+  return(dados_pca)
+}
+
+
+# Função de avaliação para uma rodada
+avaliar_modelos <- function(dados, coluna_classe) {
+  dados=as.data.frame(dados)
+  #colnames(dados)[coluna_classe] <- "Classe"
+  #dados$Classe <- as.factor(dados$Classe)
+  coluna_classe=ncol(dados)
+  dados[,coluna_classe]=as.factor(dados[,coluna_classe])
+  colnames(dados)[coluna_classe] <- "Classe"
+  preditores <- dados[, -coluna_classe]
+  resposta <- dados$Classe
+  
+  preditores_norm <- as.data.frame(scale(preditores))
+  dados_norm <- cbind(preditores_norm, Classe = resposta)
+  
+  n <- nrow(dados_norm)
+  indices <- sample(1:n, size = 0.8 * n)
+  
+  treino <- dados_norm[indices, ]
+  teste <- dados_norm[-indices, ]
+  
+  x_treino <- treino[, -ncol(treino),drop=FALSE]
+  y_treino <- treino$Classe
+  x_teste <- teste[, -ncol(teste),drop=FALSE]
+  y_teste <- teste$Classe
+  
+  # KNN
+  knn_pred <- knn(train = x_treino, test = x_teste, cl = y_treino, k = 3)
+  acuracia_knn <- mean(knn_pred == y_teste)
+  
+  # SVM
+  svm_model <- svm(Classe ~ ., data = treino, kernel = "radial")
+  svm_pred <- predict(svm_model, newdata = teste)
+  acuracia_svm <- mean(svm_pred == y_teste)
+  
+  # Árvore
+  arvore_modelo <- rpart(Classe ~ ., data = treino, method = "class")
+  arvore_pred <- predict(arvore_modelo, newdata = teste, type = "class")
+  acuracia_arvore <- mean(arvore_pred == y_teste)
+  
+  return(c(KNN = acuracia_knn, SVM = acuracia_svm, Arvore = acuracia_arvore))
+}
+
+# ===================
+# Ler os datasets
+# ===================
+
+datasets <- list(
+
+  "Adult"  =read.table("Adult.txt", sep = ","),
+  "Banana" =read.table("Banana.txt"),
+  "Blood"  =read.table("Blood.txt"),
+  "CTG" = {
+  dados <- read.table("CTG.txt")
+  dados[dados[, 23] == 3, 23] <- 2  # Corrige apenas a coluna 23
+  dadosn <- dados
+  dadosn
+},
+   Diabetes = { dados=read.table("Diabetes.txt",head=FALSE)
+                dados[, 9]=ifelse(dados[, 9] == 1, 2, 1)
+                dados
+   },
+
+   Ecoli = read.table("Ecoli.txt",sep="",head=FALSE),
+   Faults=read.table("Faults.txt",sep=","),
+   Glass=read.table("Glass.txt"),
+   Haberman=read.table("Haberman.txt"),
+   "German" =read.table("German.txt"),
+   "Heart"  =read.table("Heart.txt",sep=","),
+    ILPD=read.table("ILPD.txt",sep=","),
+   Ionosphere={
+     dados=read.table("Ionosphere.txt", sep="," , head=FALSE)
+     dados=dados[,-2]},
+   
+   Laryngeal1=read.table("Laryngeal1.txt",sep=","),
+   Laryngeal3=read.table("Laryngeal3.txt",sep=","),
+   Lithuanian=read.table("Lithuanian.txt"),
+    Liver=as.matrix(read.table("Liver.txt", sep = "", head=FALSE)),
+    Magic = {
+    dados <- read.table("Magic.txt", sep = ",", strip.white = TRUE)
+    dados[] <- lapply(dados, function(x) if (is.character(x)) trimws(x) else x)
+    if (nrow(dados) > 300) {
+      dados <- dados[sample(1:nrow(dados), 300), ]
+    }
+    dados
+  },
+  Mammo=read.table("Mammo.txt",sep=","),
+  "Monk"    =read.table("Monk.txt"),
+    Thyroid = read.table("Thyroid.txt", sep = ",", strip.white = TRUE),
+    
+
+  Phoneme= read.table("Phoneme.txt",sep=","),
+  Sonar= read.table("Sonar.txt",sep=","),
+  Segmentation={ dados=as.matrix(read.table("Segmentation.txt",sep=""))
+                 dados=dados[,-3]},
+Vehicle=read.table("Vehicle.txt", sep = ",", strip.white = TRUE),
+Vertebral=read.table("Vertebral.txt", sep = ",", strip.white = TRUE),
+
+  "WBC"     =read.table("WBC.txt",sep=","),
+
+WDVG = {
+  dados <- read.table("WDVG.txt", sep = ",", strip.white = TRUE)
+  dados <- dados[, c(6, 11, 9, 15,12,10,5,22)]  # Seleção e reordenação
+  dados[] <- lapply(dados, function(x) if (is.character(x)) trimws(x) else x)  # Remove espaços em variáveis categóricas
+  
+  set.seed(123)  # Para reproducibilidade
+  if(nrow(dados) > 300) {
+    indices_amostra <- sample(1:nrow(dados), size = 300, replace = FALSE)
+    dados <- dados[indices_amostra, ]
+  }
+},
+
+"Weaning" = {
+    dados <- read.table("Weaning.txt", sep = ",", strip.white = TRUE)
+    dados <- dados[, c(6, 7, 13, 14, 18)]  # Seleção e reordenação
+    dados[] <- lapply(dados, function(x) if (is.character(x)) trimws(x) else x)  # Remove espaços em variáveis categóricas
+    dados
+  },
+
+
+   "Wine" = read.table("Wine.txt", sep = ",")
+  
+
+  
+
+ 
+
+  
+
+
+)
+
+# ===================
+# Executar Avaliações
+# ===================
+
+# ===================
+# Executar Avaliações
+# ===================
+
+library(caret)  # Adiciona para garantir divisão estratificada
+set.seed(123)
+n_repeticoes <- 10
+resultados <- list()
+
+for (nome_dataset in names(datasets)) {
+  cat("\nRodando para dataset:", nome_dataset, "\n")
+  
+  dados <- datasets[[nome_dataset]]
+   dados<- pca_2pc_prcomp(dados)
+  coluna_classe <- ncol(dados)
+  
+  resultados_temp <- matrix(NA, nrow = 3, ncol = n_repeticoes,
+                             dimnames = list(c("KNN", "SVM", "Arvore"), NULL))
+  
+  for (i in 1:n_repeticoes) {
+    cat(" Rodada:", i, "\n")
+    
+    res <- tryCatch({
+      avaliar_modelos(dados, coluna_classe)
+    }, error = function(e) {
+      cat("  -> Erro na rodada", i, ":", conditionMessage(e), "\n")
+      return(c(KNN = NA, SVM = NA, Arvore = NA))
+    })
+    
+    resultados_temp[, i] <- res
+  }
+  
+  medias <- apply(resultados_temp, 1, mean, na.rm = TRUE)
+  desvios <- apply(resultados_temp, 1, sd, na.rm = TRUE)
+  
+  resultados[[nome_dataset]] <- data.frame(
+    Modelo = c("KNN", "SVM", "Arvore"),
+    Media = round(medias, 4),
+    Desvio = round(desvios, 4)
+  )
+}
+
+# Visualizar resultados
+for (nome in names(resultados)) {
+  cat("\n### Resultados para", nome, "###\n")
+  print(resultados[[nome]])
+}
+
+
+
+# Inicializar matrizes vazias
+nomes_modelos <- c("KNN", "SVM", "Arvore")
+nomes_datasets <- names(resultados)
+
+matriz_media <- matrix(NA, nrow = length(nomes_modelos), ncol = length(nomes_datasets),
+                        dimnames = list(nomes_modelos, nomes_datasets))
+
+matriz_desvio <- matrix(NA, nrow = length(nomes_modelos), ncol = length(nomes_datasets),
+                         dimnames = list(nomes_modelos, nomes_datasets))
+
+# Preencher as matrizes
+for (nome in nomes_datasets) {
+  res <- resultados[[nome]]
+  
+  matriz_media[, nome] <- res$Media
+  matriz_desvio[, nome] <- res$Desvio
+}
+
+# Visualizar
+cat("\n### Matriz de Acurácia Média ###\n")
+print(matriz_media)
+
+cat("\n### Matriz de Desvio Padrão ###\n")
+print(matriz_desvio)
+
+
+
+```
+
