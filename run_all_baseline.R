@@ -1,5 +1,9 @@
 # run_all_baseline.R
-
+library(class)
+library(e1071)
+library(rpart)
+library(rpart.plot)
+library(caret)
 # 1) Carrega funções
 source("src/carregar_datasets.R")      # cria datasets (ou função carregar_datasets())
 source("src/pca_2pc_prcomp.R")        # sua função PCA
