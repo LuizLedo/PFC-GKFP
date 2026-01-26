@@ -1,7 +1,7 @@
 # run_all_baseline.R
 
 # 1) Carrega funções
-source("src/carregar_dataset.R")      # cria datasets (ou função carregar_datasets())
+source("src/carregar_datasets.R")      # cria datasets (ou função carregar_datasets())
 source("src/pca_2pc_prcomp.R")        # sua função PCA
 source("src/baseline_models.R")       # sua baseline_models()
 source("src/run_baseline.R")          # sua função run_baseline()
