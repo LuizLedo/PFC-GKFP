@@ -1,16 +1,6 @@
-# run_all_baseline.R
-library(ggplot2)
-library(lattice)
-library(class)
-library(e1071)
-library(rpart)
-library(rpart.plot)
-library(caret)
-# ============================================================
 # run_all_baselines_main.R
 # Builds final table: rows = datasets, columns = classifiers
 # Values shown as mean ± sd (test accuracy)
-# ============================================================
 
 rm(list = ls())
 cat("Starting run_all_baselines_main.R ...\n")
@@ -19,53 +9,32 @@ suppressPackageStartupMessages({
   library(dplyr)
 })
 
+dir.create("results", showWarnings = FALSE)
+
 # ------------------------------------------------------------
-# 1) Load datasets and functions
+# 1) Load datasets
 # ------------------------------------------------------------
 source("src/carregar_datasets.R")
 stopifnot(exists("datasets"))
 
+# ------------------------------------------------------------
+# 2) Run baselines (each script already runs 10 seeds internally)
+# ------------------------------------------------------------
 source("src/run_knn_pca2_all_datasets.R")
 source("src/run_svm_pca2_all_datasets.R")
-source("src/run_tree_tvt_all_datasets.R")
-
-dir.create("results", showWarnings = FALSE)
-
-# ------------------------------------------------------------
-# 2) Run classifiers
-# ------------------------------------------------------------
-
-cat("\nRunning KNN...\n")
-run_knn_pca2_all(
-  datasets = datasets,
-  seeds = 1:10,
-  k_grid = c(1,3,5,7,9),
-  out_dir = "results"
-)
-
-cat("\nRunning SVM...\n")
-run_svm_pca2_all(
-  datasets = datasets,
-  seeds = 1:10,
-  cost_grid = c(0.1, 1, 10),
-  gamma_grid = c(0.1, 1),
-  out_dir = "results"
-)
-
-cat("\nRunning Decision Tree...\n")
-run_tree_all(
-  datasets = datasets,
-  seeds = 1:10,
-  cp_grid = c(0.001, 0.01, 0.05, 0.1),
-  out_dir = "results"
-)
+source("src/run_tree_tvt_all_datasets.R")   # saves tree_all_summary.csv
 
 # ------------------------------------------------------------
 # 3) Read summaries
 # ------------------------------------------------------------
-
 read_summary <- function(path, tag) {
+  if (!file.exists(path)) stop("Summary file not found: ", path)
+
   df <- read.csv(path, stringsAsFactors = FALSE)
+
+  # expected columns: dataset, acc_test_mean, acc_test_sd
+  stopifnot(all(c("dataset", "acc_test_mean", "acc_test_sd") %in% names(df)))
+
   df %>%
     select(dataset, acc_test_mean, acc_test_sd) %>%
     rename(
@@ -74,40 +43,41 @@ read_summary <- function(path, tag) {
     )
 }
 
-knn_sum  <- read_summary("results/knn_pca2_all_summary.csv",  "knn")
-svm_sum  <- read_summary("results/svm_pca2_all_summary.csv",  "svm")
-tree_sum <- read_summary("results/dt_pca2_all_summary.csv",   "dt")
+knn_sum  <- read_summary("results/knn_pca2_all_summary.csv", "knn")
+svm_sum  <- read_summary("results/svm_pca2_all_summary.csv", "svm")
+tree_sum <- read_summary("results/tree_all_summary.csv",    "dt")  # <- CORRIGIDO
 
 # ------------------------------------------------------------
 # 4) Merge and format (mean ± sd)
 # ------------------------------------------------------------
-
 final_table <- knn_sum %>%
   full_join(svm_sum,  by = "dataset") %>%
   full_join(tree_sum, by = "dataset") %>%
   arrange(dataset)
 
+fmt_mean_sd <- function(mu, sd) {
+  ifelse(is.na(mu) | is.na(sd), NA_character_, sprintf("%.4f \u00B1 %.4f", mu, sd))
+}
+
 final_table_fmt <- final_table %>%
   mutate(
-    KNN = sprintf("%.4f ± %.4f", knn_mean, knn_sd),
-    SVM = sprintf("%.4f ± %.4f", svm_mean, svm_sd),
-    DT  = sprintf("%.4f ± %.4f",  dt_mean,  dt_sd)
+    KNN = fmt_mean_sd(knn_mean, knn_sd),
+    SVM = fmt_mean_sd(svm_mean, svm_sd),
+    DT  = fmt_mean_sd(dt_mean,  dt_sd)
   ) %>%
   select(dataset, KNN, SVM, DT)
 
 # ------------------------------------------------------------
 # 5) Print results
 # ------------------------------------------------------------
-
 cat("\n========================================\n")
-cat("FINAL TEST ACCURACY (mean ± sd)\n")
+cat("FINAL TEST ACCURACY (mean \u00B1 sd)\n")
 cat("========================================\n")
-print(final_table_fmt)
+print(final_table_fmt, row.names = FALSE)
 
 # ------------------------------------------------------------
 # 6) Save final table
 # ------------------------------------------------------------
-
 write.csv(
   final_table_fmt,
   "results/final_baselines_accuracy_mean_sd.csv",
