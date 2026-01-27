@@ -53,7 +53,7 @@ run_svm_pca2_all(
 )
 
 cat("\nRunning Decision Tree...\n")
-run_dt_pca2_all(
+run_tree_all(
   datasets = datasets,
   seeds = 1:10,
   cp_grid = c(0.001, 0.01, 0.05, 0.1),
